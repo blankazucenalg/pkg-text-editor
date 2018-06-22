@@ -19,11 +19,19 @@
       link: linkFunction,
       require: '?ngModel',
       scope: {
-        ngModel: '='
+        ngModel: '=',
+        limitChars: '=',
+        limitParagraphs: '='
       }
     };
 
     function linkFunction(scope, element, attrs, ngModel) {
+      scope.limit = scope.limitChars;
+      if (!scope.limitChars) {
+        if (!scope.limitParagraphs) {
+          scope.limit = -1;
+        }
+      }
       if (!ngModel) {
         console.log('No ngModel');
         return;
@@ -35,7 +43,8 @@
 
       ngModel.$parsers.push(function (viewValue) {
         var trusted = $sce.getTrustedHtml(viewValue);
-        return trusted.split('[').join('&#91;').split(']').join('&#93;').split('<').join('[').split('>').join(']');
+        trusted = trusted.split('[').join('&#91;').split(']').join('&#93;').split('<').join('[').split('>').join(']');
+        return trusted;
       });
 
       scope.$watch('htmlToRender', function () {
@@ -50,6 +59,13 @@
         var res = modelValue;
         if (modelValue && modelValue.length > 1) {
           res = modelValue.split('[').join('<').split(']').join('>');
+          if (scope.limitParagraphs) {
+            var text = res.split('</div>')[0].split('<br>');
+            res = text[0].length > 5 ? text[0] : text[1];
+            res += '...';
+          } else if (scope.limitChars) {
+            res = res.slice(0, scope.limitChars) + '...';
+          }
         }
         return $sce.getTrustedHtml(res);
       }

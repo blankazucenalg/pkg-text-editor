@@ -1,6 +1,6 @@
 /**
  * text-editor-no-html directive
- * Renders an angular-trix element with parsed ngModel
+ * Renders an element with parsed ngModel
  * @author Blanca López<blanca.lopez@data4.mx>
  * @since Dec 15, 2017
  */
@@ -25,7 +25,7 @@
 
 		function linkFunction(scope, element, attrs, ngModel) {
 			if (angular.isUndefined(ngModel)) {
-				angular.element(element[0]).find('trix-editor').html('');
+				angular.element(element[0]).find('text-editor-no-html').html('');
 				return;
 			}
 
